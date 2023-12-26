@@ -10,8 +10,11 @@ The Country Management System is a web application that provides information abo
 - Postman
 
 ## Running the Application
-1. Clone this repository in IntelliJ.
-2. In Postman, authenticate using cURL by hitting the authentication endpoint: `http://localhost:8080/auth/login` and method: 'POST'.
+1. Clone this repository in IntelliJ:
+   - copy the link given in the code of this repository.
+   - paste it into Project with version control.
+   - Clone it.
+3. In Postman, authenticate using cURL by hitting the authentication endpoint: `http://localhost:8080/auth/login` and method: 'POST'.
 
    ```bash
     curl --location 'http://localhost:8080/auth/login' \
@@ -33,12 +36,12 @@ The Country Management System is a web application that provides information abo
    }'
     ```
 
-3. Copy the JWT token received in the response.
+4. Copy the JWT token received in the response.
 
-4. In Postman, add the token to the header:
+5. In Postman, add the token to the header:
    - Key: `Authorization`
    - Value: `Bearer your_copied_token`
-5.  Please be aware that the token will expire after 5 hours. You may need to re-authenticate and obtain a new token when the current token expires.
+6.  Please be aware that the token will expire after 5 hours. You may need to re-authenticate and obtain a new token when the current token expires.
 
 ## Making API Requests
 
