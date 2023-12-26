@@ -1,6 +1,6 @@
 # Country Management System
 
-The Country Management System is a web application that provides information about different countries. It allows users to retrieve details about a specific country, filter and sort a list of countries based on various criteria.
+The Country Management System is a web application that provides information about different countries. It allows users to retrieve details about a specific country, and filter and sort a list of countries based on various criteria.
 
 
 ## Prerequisites
@@ -8,7 +8,6 @@ The Country Management System is a web application that provides information abo
 - Maven
 - Java
 - Postman
-- SpringBoot
 
 ## Running the Application
 1. Clone this repository in IntelliJ.
