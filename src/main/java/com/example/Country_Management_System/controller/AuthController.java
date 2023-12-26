@@ -15,6 +15,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Controller class for handling authentication-related endpoints.
+ */
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -23,45 +26,67 @@ public class AuthController {
     private UserDetailsService userDetailsService;
 
     @Autowired
-    private AuthenticationManager manager;
+    private AuthenticationManager authenticationManager;
 
     @Autowired
-    private JwtHelper helper;
+    private JwtHelper jwtHelper;
 
+    // Logger for logging authentication-related actions
     private Logger logger = LoggerFactory.getLogger(AuthController.class);
 
-
+    /**
+     * Handles the "/auth/login" endpoint for user authentication and token generation.
+     *
+     * @param request The JwtRequest containing the username and password.
+     * @return ResponseEntity containing JwtResponse with the generated JWT token.
+     */
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest request) {
 
-        //authenticate method
+        // Authenticate user credentials
         this.doAuthenticate(request.getUsername(), request.getPassword());
 
+        // Load user details
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
-        //generate token through jwthelper
-        String token = this.helper.generateToken(userDetails);
 
+        // Generate JWT token through JwtHelper
+        String token = this.jwtHelper.generateToken(userDetails);
+
+        // Build JwtResponse
         JwtResponse response = JwtResponse.builder()
                 .jwtToken(token)
                 .username(userDetails.getUsername()).build();
+
+        // Return ResponseEntity with JwtResponse and HTTP status OK
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    /**
+     * Authenticates the user with the provided username and password using the AuthenticationManager.
+     *
+     * @param username The username to authenticate.
+     * @param password The password to authenticate.
+     */
     private void doAuthenticate(String username, String password) {
-
+        // Create an authentication token with the provided username and password
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, password);
-        //authenticate with manager
-        try {
-            manager.authenticate(authentication);
-        } catch (BadCredentialsException e) {
-            throw new BadCredentialsException(" Invalid Username or Password  !!");
-        }
 
+        // Authenticate with the AuthenticationManager
+        try {
+            authenticationManager.authenticate(authentication);
+        } catch (BadCredentialsException e) {
+            // Throw a BadCredentialsException if authentication fails
+            throw new BadCredentialsException("Invalid Username or Password!!");
+        }
     }
 
+    /**
+     * Exception handler for handling BadCredentialsException.
+     *
+     * @return Error message for invalid credentials.
+     */
     @ExceptionHandler(BadCredentialsException.class)
     public String exceptionHandler() {
-        return "Credentials Invalid !!";
+        return "Credentials Invalid!!";
     }
-
 }

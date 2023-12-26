@@ -15,6 +15,11 @@ public class CountryController {
     @Autowired
     CountryService countryService;
 
+    //Fetch detailed information about a specific country by providing its name as a parameter.
+    /**
+     * @param country_name the name of the country.
+     * @return
+     */
     @GetMapping("/getInfo/country_name/{name}")
     public ResponseEntity getInfo(@PathVariable("name") String country_name){
 
@@ -27,6 +32,17 @@ public class CountryController {
         }
     }
 
+    //Retrieve a list of all countries' names based on filters (population/area/language) and
+    //sorting(asc/desc). It should have support for pagination.
+    /**
+     * @param language   The language spoken in the countries.
+     * @param population Minimum population required.
+     * @param area       Minimum area required.
+     * @param order      The order in which the results should be sorted (asc/desc).
+     * @param pageNo     The page number for paginated results.
+     * @param pageSize   The size of each page in the paginated results.
+     * @return
+     */
     @GetMapping("/getCountries")
     public ResponseEntity filterCountries(@RequestParam("language") String language, @RequestParam("population")Long population, @RequestParam("area")Double area, @RequestParam("sort") String order,  @RequestParam("page") int pageNo, @RequestParam("pageSize") int pageSize){
         try {

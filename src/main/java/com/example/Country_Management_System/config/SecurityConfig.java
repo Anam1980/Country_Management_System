@@ -10,34 +10,43 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * Configuration class for defining security-related settings in the Spring application.
+ */
 @Configuration
 public class SecurityConfig {
 
+    @Autowired
+    private JwtAuthenticationEntryPoint authenticationEntryPoint;
 
     @Autowired
-    private JwtAuthenticationEntryPoint point;
-    @Autowired
-    private JwtAuthenticationFilter filter;
+    private JwtAuthenticationFilter authenticationFilter;
 
+    /**
+     * Configures the security filter chain for the application.
+     *
+     * @param http HttpSecurity instance to configure security settings.
+     * @return SecurityFilterChain instance.
+     * @throws Exception If an error occurs during the configuration.
+     */
     @SuppressWarnings("removal")
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        //configuration
+        // Configure security settings
         http.csrf(csrf -> csrf.disable())
                 .authorizeRequests()
-                .requestMatchers("/country/**")
-                .authenticated()
-                .requestMatchers("/auth/login")
-                .permitAll()
-                .anyRequest()
-                .authenticated()
+                .requestMatchers("/country/**").authenticated()
+                .requestMatchers("/auth/login").permitAll()
+                .anyRequest().authenticated()
                 .and()
-                .exceptionHandling(ex -> ex.authenticationEntryPoint(point))
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(authenticationEntryPoint))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
+
+        // Add custom JwtAuthenticationFilter before UsernamePasswordAuthenticationFilter
+        http.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        // Build and return the SecurityFilterChain
         return http.build();
     }
-
-
 }

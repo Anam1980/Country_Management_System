@@ -11,64 +11,108 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+/**
+ * Component class for handling JWT-related operations in the Spring application.
+ */
 @Component
 public class JwtHelper {
 
-    //requirement :
-    public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60; //hr * min * sec
+    // JWT token validity time in seconds
+    public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60; // hr * min * sec
 
-    //    public static final long JWT_TOKEN_VALIDITY =  60;
+    // Secret key for signing and validating JWT tokens
     private String secret = "afafasfafafasfasfasfafacasdasfasxASFACASDFACASDFASFASFDAFASFASDAADSCSDFADCVSGCFVADXCcadwavfsfarvf";
 
-    //retrieve username from jwt token
+    /**
+     * Retrieves the username from a JWT token.
+     * @param token The JWT token.
+     * @return The username extracted from the token.
+     */
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
     }
 
-    //retrieve expiration date from jwt token
+    /**
+     * Retrieves the expiration date from a JWT token.
+     *
+     * @param token The JWT token.
+     * @return The expiration date extracted from the token.
+     */
     public Date getExpirationDateFromToken(String token) {
-        return  getClaimFromToken(token, Claims::getExpiration);
+        return getClaimFromToken(token, Claims::getExpiration);
     }
 
+    /**
+     * Retrieves a specific claim from a JWT token using the provided claims resolver function.
+     *
+     * @param token           The JWT token.
+     * @param claimsResolver  The claims resolver function.
+     * @param <T>             The type of the claim.
+     * @return The claim extracted from the token.
+     */
     public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = getAllClaimsFromToken(token);
         return claimsResolver.apply(claims);
     }
 
-    //for retrieveing any information from token we will need the secret key
+    /**
+     * Retrieves all claims from a JWT token.
+     *
+     * @param token The JWT token.
+     * @return All claims extracted from the token.
+     */
     private Claims getAllClaimsFromToken(String token) {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
     }
 
-    //check if the token has expired
+    /**
+     * Checks if a JWT token has expired.
+     *
+     * @param token The JWT token.
+     * @return True if the token has expired, false otherwise.
+     */
     private Boolean isTokenExpired(String token) {
         final Date expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
     }
 
-    //generate token for user
+    /**
+     * Generates a JWT token for the given user details.
+     *
+     * @param userDetails The user details.
+     * @return The generated JWT token.
+     */
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         return doGenerateToken(claims, userDetails.getUsername());
     }
 
-    //while creating the token -
-    //1. Define  claims of the token, like Issuer, Expiration, Subject, and the ID
-    //2. Sign the JWT using the HS512 algorithm and secret key.
-    //3. According to JWS Compact Serialization(https://tools.ietf.org/html/draft-ietf-jose-json-web-signature-41#section-3.1)
-    //   compaction of the JWT to a URL-safe string
+    /**
+     * Generates a JWT token with the specified claims and subject.
+     *
+     * @param claims  The claims to be included in the token.
+     * @param subject The subject of the token (usually the username).
+     * @return The generated JWT token.
+     */
     private String doGenerateToken(Map<String, Object> claims, String subject) {
-
-        return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))//convert into milliseconds
-                .signWith(SignatureAlgorithm.HS512, secret).compact();
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(subject)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000)) // convert to milliseconds
+                .signWith(SignatureAlgorithm.HS512, secret)
+                .compact();
     }
 
-    //validate token
+    /**
+     * Validates a JWT token against the provided user details.
+     *
+     * @param token       The JWT token.
+     * @param userDetails The user details.
+     * @return True if the token is valid, false otherwise.
+     */
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = getUsernameFromToken(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
-
-
 }

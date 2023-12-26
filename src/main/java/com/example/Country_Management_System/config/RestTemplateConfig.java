@@ -7,8 +7,8 @@ import org.springframework.web.client.RestTemplate;
 
 @Configuration
 public class RestTemplateConfig {
-    //common piece pf code
-    //standarized way to getresttemplate
+    //common piece of code
+    //standardized way to getRestTemplate
     @Bean
     public RestTemplate getRestTemplate(RestTemplateBuilder restTemplateBuilder){
         return  restTemplateBuilder.build();

@@ -3,14 +3,21 @@ package com.example.Country_Management_System.models;
 
 import java.util.Map;
 
+/**
+ * Represents a response containing information about a country.
+ */
 public class CountryResponse {
 
+    //Name of the Country
     private Name name;
 
+    //Population of country
     private long population;
 
+    //Area of country
     private double area;
 
+    //Getter Setters
     public long getPopulation() {
         return population;
     }
@@ -35,9 +42,18 @@ public class CountryResponse {
         this.name = name;
     }
 
+    /**
+     *  class Name->Represents the name information of the country.
+     */
     public static class Name {
+
+        //Common Name of country
         private String common;
+
+        //Official name of country
         private String official;
+
+        //nativeName of the country
         private Map<String, NativeName> nativeName;
 
         // getters and setters
@@ -65,6 +81,9 @@ public class CountryResponse {
             this.nativeName = nativeName;
         }
 
+        /**
+         * class NativeNames ->  Represents the native names information of the country.
+         */
         public static class NativeName {
             private String official;
             private String common;
